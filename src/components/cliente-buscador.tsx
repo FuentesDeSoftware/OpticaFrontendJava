@@ -1,28 +1,26 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Search, UserRound } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { query } from "@/lib/api";
 import type { Cliente } from "@/lib/types";
 import { useData } from "@/lib/use-data";
+import { useDebouncedCallback } from "@/lib/use-debounce";
 import { cn } from "@/lib/utils";
 
 /** Busca clientes por DNI, nombres o apellidos. */
 export function ClienteBuscador({ seleccionado, onSelect }: { seleccionado?: number | null; onSelect: (c: Cliente) => void }) {
   const [texto, setTexto] = useState("");
   const [q, setQ] = useState("");
-  useEffect(() => {
-    const t = setTimeout(() => setQ(texto.trim()), 300);
-    return () => clearTimeout(t);
-  }, [texto]);
+  const [buscar] = useDebouncedCallback(setQ, 300);
   const { data, cargando } = useData<Cliente[]>(`/vendedor/clientes${query({ q })}`);
 
   return (
     <div className="grid gap-3">
       <div className="relative">
         <Search className="absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
-        <Input className="pl-8" placeholder="DNI, nombres o apellidos" value={texto} onChange={(e) => setTexto(e.target.value)} />
+        <Input className="pl-8" placeholder="DNI, nombres o apellidos" value={texto} onChange={(e) => { setTexto(e.target.value); buscar(e.target.value.trim()); }} />
       </div>
       <div className="grid max-h-80 gap-1 overflow-y-auto">
         {cargando && !data ? (

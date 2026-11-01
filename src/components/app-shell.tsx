@@ -1,12 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, type ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import { useState, type ReactNode } from "react";
 import { Glasses, LogOut, Menu, X, type LucideIcon } from "lucide-react";
+import { logout } from "@/app/actions/auth";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
-import type { Sesion } from "@/lib/types";
 
 export interface NavItem {
   href: string;
@@ -14,24 +14,14 @@ export interface NavItem {
   icon: LucideIcon;
 }
 
-export function AppShell({ nav, rolLabel, children }: { nav: NavItem[]; rolLabel: string; children: ReactNode }) {
+export function AppShell({ nav, rolLabel, usuario, children }: {
+  nav: NavItem[];
+  rolLabel: string;
+  usuario: ReactNode;
+  children: ReactNode;
+}) {
   const pathname = usePathname();
-  const router = useRouter();
-  const [sesion, setSesion] = useState<Sesion | null>(null);
   const [menuAbierto, setMenuAbierto] = useState(false);
-
-  useEffect(() => {
-    fetch("/api/auth/me", { cache: "no-store" })
-      .then((r) => (r.ok ? r.json() : null))
-      .then(setSesion)
-      .catch(() => setSesion(null));
-  }, []);
-
-  async function salir() {
-    await fetch("/api/auth/logout", { method: "POST" });
-    router.replace("/login");
-    router.refresh();
-  }
 
   const raiz = nav[0]?.href;
   // Solo se marca el enlace con la coincidencia más larga (/ventas/nueva no activa también /ventas)
@@ -69,13 +59,15 @@ export function AppShell({ nav, rolLabel, children }: { nav: NavItem[]; rolLabel
 
           <div className="ml-auto flex items-center gap-3">
             <div className="hidden text-right leading-tight sm:block">
-              <p className="text-sm font-medium">{sesion?.nombre ?? " "}</p>
+              <p className="text-sm font-medium">{usuario}</p>
               <p className="text-xs text-muted-foreground">{rolLabel}</p>
             </div>
-            <Button variant="outline" size="sm" onClick={salir}>
-              <LogOut className="size-4" />
-              <span className="hidden sm:inline">Salir</span>
-            </Button>
+            <form action={logout}>
+              <Button type="submit" variant="outline" size="sm">
+                <LogOut className="size-4" />
+                <span className="hidden sm:inline">Salir</span>
+              </Button>
+            </form>
             <Button
               variant="ghost"
               size="icon"

@@ -12,9 +12,9 @@ const nav: NavItem[] = [
   { href: "/vendedor/ventas", label: "Ventas", icon: Receipt },
 ];
 
-export function VendedorShell({ children }: { children: ReactNode }) {
+export function VendedorShell({ usuario, children }: { usuario: ReactNode; children: ReactNode }) {
   return (
-    <AppShell nav={nav} rolLabel="Vendedor">
+    <AppShell nav={nav} usuario={usuario} rolLabel="Vendedor">
       {children}
     </AppShell>
   );

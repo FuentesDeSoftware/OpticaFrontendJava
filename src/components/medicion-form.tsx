@@ -1,14 +1,14 @@
 "use client";
 
-import { useState, type FormEvent } from "react";
+import { startTransition, useActionState, type FormEvent } from "react";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { crearMedicion } from "@/app/actions/vendedor";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { api, mensajeDeError } from "@/lib/api";
 import type { Cliente, Medicion } from "@/lib/types";
 
 const ojos = [
@@ -33,34 +33,26 @@ export function MedicionForm({
   onOpenChange: (v: boolean) => void;
   onCreada: (m: Medicion) => void;
 }) {
-  const [guardando, setGuardando] = useState(false);
-  const [errores, setErrores] = useState<Record<string, string>>({});
   const hoy = new Date().toISOString().slice(0, 10);
 
-  async function guardar(e: FormEvent<HTMLFormElement>) {
+  const [estado, guardar, guardando] = useActionState(async (_prev: unknown, form: FormData) => {
+    const r = await crearMedicion(cliente.id, form);
+    if (r.ok) {
+      toast.success("Medición registrada");
+      onCreada(r.data);
+      onOpenChange(false);
+    } else {
+      toast.error(r.mensaje);
+    }
+    return r;
+  }, null);
+  const errores = estado && !estado.ok ? estado.errores : {};
+
+  // Con onSubmit (y no action) React no reinicia el formulario si el backend rechaza los datos
+  function enviar(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const form = new FormData(e.currentTarget);
-    const body: Record<string, unknown> = {
-      fecha: form.get("fecha") || null,
-      dip: form.get("dip") ? Number(form.get("dip")) : null,
-      observaciones: String(form.get("observaciones") ?? "").trim() || null,
-    };
-    for (const o of ojos) for (const v of valores) {
-      const k = `${o.prefijo}${v.sufijo}`;
-      body[k] = Number(form.get(k) || 0);
-    }
-    setGuardando(true);
-    try {
-      const m = await api<Medicion>(`/vendedor/clientes/${cliente.id}/mediciones`, { method: "POST", body });
-      toast.success("Medición registrada");
-      onCreada(m);
-      onOpenChange(false);
-    } catch (err) {
-      setErrores((err as { errores?: Record<string, string> }).errores ?? {});
-      toast.error(mensajeDeError(err));
-    } finally {
-      setGuardando(false);
-    }
+    startTransition(() => guardar(form));
   }
 
   return (
@@ -70,7 +62,7 @@ export function MedicionForm({
           <DialogTitle>Nueva medición</DialogTitle>
           <DialogDescription>Receta de {cliente.nombreCompleto} (DNI {cliente.dni}).</DialogDescription>
         </DialogHeader>
-        <form onSubmit={guardar} className="grid gap-5">
+        <form onSubmit={enviar} className="grid gap-5">
           {ojos.map((o) => (
             <fieldset key={o.prefijo} className="grid gap-2">
               <legend className="mb-2 text-sm font-medium">{o.label}</legend>

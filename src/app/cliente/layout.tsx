@@ -1,5 +1,6 @@
+import { UsuarioActual } from "@/components/usuario-actual";
 import { ClienteShell } from "./shell";
 
 export default function ClienteLayout({ children }: LayoutProps<"/cliente">) {
-  return <ClienteShell>{children}</ClienteShell>;
+  return <ClienteShell usuario={<UsuarioActual />}>{children}</ClienteShell>;
 }

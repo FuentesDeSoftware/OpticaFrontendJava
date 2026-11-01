@@ -1,8 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState, useTransition } from "react";
 import { Bookmark, BookmarkCheck, Glasses, RotateCcw } from "lucide-react";
 import { toast } from "sonner";
+import { apartarAro } from "@/app/actions/cliente";
 import { EmptyState, PageHeader } from "@/components/app-shell";
 import { AroCard } from "@/components/aro-card";
 import { FiltroSelect } from "@/components/filtro-select";
@@ -10,9 +11,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api, mensajeDeError, query } from "@/lib/api";
+import { query } from "@/lib/api";
 import type { Apartado, Aro, FiltrosCatalogo } from "@/lib/types";
 import { useData } from "@/lib/use-data";
+import { useDebouncedCallback } from "@/lib/use-debounce";
 
 const vacio = { marca: "", material: "", forma: "", precioMin: "", precioMax: "" };
 
@@ -23,31 +25,35 @@ export default function Catalogo() {
   const apartados = useData<Apartado[]>("/cliente/apartados");
   const aros = useData<Aro[]>(`/catalogo/aros${query(filtros)}`, { mantener: true });
   const [apartando, setApartando] = useState<number | null>(null);
+  const [, startTransition] = useTransition();
 
   // Los precios se aplican tras una breve pausa al escribir
-  useEffect(() => {
-    const t = setTimeout(() => setFiltros((f) => ({ ...f, ...precios })), 400);
-    return () => clearTimeout(t);
-  }, [precios]);
+  const [aplicarPrecios, cancelarPrecios] = useDebouncedCallback(setFiltros, 400);
+  function cambiarPrecio(k: keyof typeof precios, v: string) {
+    const siguiente = { ...precios, [k]: v };
+    setPrecios(siguiente);
+    aplicarPrecios((f) => ({ ...f, ...siguiente }));
+  }
 
   const pendientes = useMemo(
     () => new Set(apartados.data?.filter((a) => a.estado === "PENDIENTE").map((a) => a.aroId)),
     [apartados.data],
   );
 
-  async function apartar(aro: Aro) {
+  function apartar(aro: Aro) {
     setApartando(aro.id);
-    try {
-      await api<Apartado>("/cliente/apartados", { method: "POST", body: { aroId: aro.id } });
-      toast.success(`Apartaste ${aro.marca} ${aro.modelo}`, {
-        description: "Un vendedor lo tendrá en cuenta para tu cotización.",
-      });
-      await apartados.recargar();
-    } catch (e) {
-      toast.error(mensajeDeError(e));
-    } finally {
+    startTransition(async () => {
+      const r = await apartarAro(aro.id);
+      if (r.ok) {
+        toast.success(`Apartaste ${aro.marca} ${aro.modelo}`, {
+          description: "Un vendedor lo tendrá en cuenta para tu cotización.",
+        });
+        await apartados.recargar();
+      } else {
+        toast.error(r.mensaje);
+      }
       setApartando(null);
-    }
+    });
   }
 
   const set = (k: keyof typeof vacio) => (v: string) => setFiltros((f) => ({ ...f, [k]: v }));
@@ -64,16 +70,16 @@ export default function Catalogo() {
         <div className="grid gap-1.5">
           <Label htmlFor="precioMin">Precio mín. (S/)</Label>
           <Input id="precioMin" type="number" min={0} inputMode="decimal" value={precios.precioMin}
-                 onChange={(e) => setPrecios((p) => ({ ...p, precioMin: e.target.value }))} />
+                 onChange={(e) => cambiarPrecio("precioMin", e.target.value)} />
         </div>
         <div className="grid gap-1.5">
           <Label htmlFor="precioMax">Precio máx. (S/)</Label>
           <Input id="precioMax" type="number" min={0} inputMode="decimal" value={precios.precioMax}
-                 onChange={(e) => setPrecios((p) => ({ ...p, precioMax: e.target.value }))} />
+                 onChange={(e) => cambiarPrecio("precioMax", e.target.value)} />
         </div>
         <div className="flex items-end">
           <Button variant="outline" className="w-full" disabled={!hayFiltros}
-                  onClick={() => { setFiltros(vacio); setPrecios({ precioMin: "", precioMax: "" }); }}>
+                  onClick={() => { cancelarPrecios(); setFiltros(vacio); setPrecios({ precioMin: "", precioMax: "" }); }}>
             <RotateCcw className="size-4" /> Limpiar
           </Button>
         </div>

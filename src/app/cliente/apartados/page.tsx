@@ -1,15 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { useTransition } from "react";
 import { Bookmark, X } from "lucide-react";
 import { toast } from "sonner";
+import { cancelarApartado } from "@/app/actions/cliente";
 import { EmptyState, PageHeader } from "@/components/app-shell";
 import { AroCard } from "@/components/aro-card";
 import { ConfirmButton } from "@/components/confirm-button";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { api, mensajeDeError } from "@/lib/api";
 import { fecha } from "@/lib/format";
 import type { Apartado, EstadoApartado } from "@/lib/types";
 import { useData } from "@/lib/use-data";
@@ -22,15 +23,18 @@ const estadoBadge: Record<EstadoApartado, { label: string; variant: "default" | 
 
 export default function MisApartados() {
   const { data, cargando, recargar } = useData<Apartado[]>("/cliente/apartados");
+  const [, startTransition] = useTransition();
 
-  async function cancelar(a: Apartado) {
-    try {
-      await api(`/cliente/apartados/${a.id}`, { method: "DELETE" });
-      toast.success("Apartado cancelado");
-      await recargar();
-    } catch (e) {
-      toast.error(mensajeDeError(e));
-    }
+  function cancelar(a: Apartado) {
+    startTransition(async () => {
+      const r = await cancelarApartado(a.id);
+      if (r.ok) {
+        toast.success("Apartado cancelado");
+        await recargar();
+      } else {
+        toast.error(r.mensaje);
+      }
+    });
   }
 
   return (

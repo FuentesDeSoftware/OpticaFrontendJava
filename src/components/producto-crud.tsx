@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useState, type FormEvent, type ReactNode } from "react";
+import { useActionState, useMemo, useState, useTransition, type FormEvent, type ReactNode } from "react";
 import { Loader2, Pencil, Plus, Search, Trash2 } from "lucide-react";
 import { toast } from "sonner";
+import { eliminarProducto, guardarProducto } from "@/app/actions/vendedor";
 import { ConfirmButton } from "@/components/confirm-button";
 import { StockBadge } from "@/components/stock-badge";
 import { Button } from "@/components/ui/button";
@@ -12,7 +13,6 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { api, mensajeDeError } from "@/lib/api";
 import { soles } from "@/lib/format";
 import { useData } from "@/lib/use-data";
 import { cn } from "@/lib/utils";
@@ -59,8 +59,8 @@ export function ProductoCrud<T extends ProductoBase>({
   const [busqueda, setBusqueda] = useState("");
   const [editando, setEditando] = useState<T | null>(null);
   const [abierto, setAbierto] = useState(false);
-  const [guardando, setGuardando] = useState(false);
-  const [errores, setErrores] = useState<Record<string, string>>({});
+  const [apertura, setApertura] = useState(0);
+  const [, startTransition] = useTransition();
 
   const todosLosCampos: Campo[] = [
     { name: "codigo", label: "Código", required: true },
@@ -75,48 +75,48 @@ export function ProductoCrud<T extends ProductoBase>({
     return (data ?? []).filter((p) => `${p.codigo} ${p.etiqueta}`.toLowerCase().includes(q));
   }, [data, busqueda]);
 
-  function abrir(producto: T | null) {
-    setEditando(producto);
-    setErrores({});
-    setAbierto(true);
-  }
-
-  async function guardar(e: FormEvent<HTMLFormElement>) {
-    e.preventDefault();
-    const form = new FormData(e.currentTarget);
+  const [estado, guardar, guardando] = useActionState(async (_prev: unknown, form: FormData) => {
     const body: Record<string, unknown> = {};
     for (const c of todosLosCampos) {
       const v = String(form.get(c.name) ?? "").trim();
       body[c.name] = c.type === "number" ? (v === "" ? null : Number(v)) : v || null;
     }
-    setGuardando(true);
-    try {
-      if (editando) {
-        await api(`/vendedor/${recurso}/${editando.id}`, { method: "PUT", body });
-        toast.success(`${singular} actualizado`);
-      } else {
-        await api(`/vendedor/${recurso}`, { method: "POST", body });
-        toast.success(`${singular} creado`);
-      }
+    const r = await guardarProducto(recurso, editando?.id ?? null, body);
+    if (r.ok) {
+      toast.success(`${singular} ${editando ? "actualizado" : "creado"}`);
       setAbierto(false);
       await recargar();
-    } catch (err) {
-      const errs = (err as { errores?: Record<string, string> }).errores ?? {};
-      setErrores(errs);
-      toast.error(mensajeDeError(err));
-    } finally {
-      setGuardando(false);
+    } else {
+      toast.error(r.mensaje);
     }
+    return { ...r, apertura };
+  }, null);
+  // Los errores de un intento anterior no se muestran al volver a abrir el diálogo
+  const errores = estado && !estado.ok && estado.apertura === apertura ? estado.errores : {};
+
+  // Con onSubmit (y no action) React no reinicia el formulario si el backend rechaza los datos
+  function enviar(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const form = new FormData(e.currentTarget);
+    startTransition(() => guardar(form));
   }
 
-  async function eliminar(p: T) {
-    try {
-      await api(`/vendedor/${recurso}/${p.id}`, { method: "DELETE" });
-      toast.success(`${singular} eliminado`);
-      await recargar();
-    } catch (err) {
-      toast.error(mensajeDeError(err));
-    }
+  function abrir(producto: T | null) {
+    setEditando(producto);
+    setApertura((n) => n + 1);
+    setAbierto(true);
+  }
+
+  function eliminar(p: T) {
+    startTransition(async () => {
+      const r = await eliminarProducto(recurso, p.id);
+      if (r.ok) {
+        toast.success(`${singular} eliminado`);
+        await recargar();
+      } else {
+        toast.error(r.mensaje);
+      }
+    });
   }
 
   const valorInicial = (name: string) => {
@@ -194,7 +194,7 @@ export function ProductoCrud<T extends ProductoBase>({
             <DialogTitle>{editando ? `Editar ${singular.toLowerCase()}` : `Nuevo ${singular.toLowerCase()}`}</DialogTitle>
             <DialogDescription>Los campos marcados con * son obligatorios.</DialogDescription>
           </DialogHeader>
-          <form key={editando?.id ?? "nuevo"} onSubmit={guardar} className="grid gap-4">
+          <form key={editando?.id ?? "nuevo"} onSubmit={enviar} className="grid gap-4">
             <div className="grid gap-3 sm:grid-cols-2">
               {todosLosCampos.map((c) => (
                 <div key={c.name} className={cn("grid gap-1.5", c.full && "sm:col-span-2")}>

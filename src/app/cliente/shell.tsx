@@ -11,9 +11,9 @@ const nav: NavItem[] = [
   { href: "/cliente/apartados", label: "Mis apartados", icon: Bookmark },
 ];
 
-export function ClienteShell({ children }: { children: ReactNode }) {
+export function ClienteShell({ usuario, children }: { usuario: ReactNode; children: ReactNode }) {
   return (
-    <AppShell nav={nav} rolLabel="Cliente">
+    <AppShell nav={nav} usuario={usuario} rolLabel="Cliente">
       {children}
     </AppShell>
   );
