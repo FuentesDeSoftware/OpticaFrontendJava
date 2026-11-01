@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "server-actions": {
+      "source": "davepoon/buildwithclaude",
+      "sourceType": "github",
+      "skillPath": "plugins/nextjs-expert/skills/server-actions/SKILL.md",
+      "computedHash": "beb8383b05d1c0a2d11590e6924a5994d30b0c13a4ba8dd64eba4a1ae5e4bc8b"
+    }
+  }
+}
