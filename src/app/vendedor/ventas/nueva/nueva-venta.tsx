@@ -15,7 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { soles } from "@/lib/format";
+import { lempiras } from "@/lib/format";
 import type { Accesorio, Apartado, Aro, Cliente, Luna, Medicion, Venta } from "@/lib/types";
 import { useData } from "@/lib/use-data";
 import { cn } from "@/lib/utils";
@@ -201,7 +201,7 @@ export function NuevaVenta({ clienteInicial }: { clienteInicial: Cliente | null 
                     <StockBadge stock={a.stock} />
                   </div>
                   <div className="mt-2 flex items-center justify-between">
-                    <span className="font-semibold">{soles(a.precio)}</span>
+                    <span className="font-semibold">{lempiras(a.precio)}</span>
                     {apartadosPendientes.has(a.id) && (
                       <Badge><BookmarkCheck className="size-3" /> Apartado por el cliente</Badge>
                     )}
@@ -222,7 +222,7 @@ export function NuevaVenta({ clienteInicial }: { clienteInicial: Cliente | null 
                     </div>
                     <StockBadge stock={l.stock} />
                   </div>
-                  <p className="mt-2 text-sm"><span className="font-semibold">{soles(l.precio)}</span> c/u × 2</p>
+                  <p className="mt-2 text-sm"><span className="font-semibold">{lempiras(l.precio)}</span> c/u × 2</p>
                 </Opcion>
               ))}
             </div>
@@ -234,7 +234,7 @@ export function NuevaVenta({ clienteInicial }: { clienteInicial: Cliente | null 
                 <div key={a.id} className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2">
                   <div>
                     <p className="text-sm font-medium">{a.nombre}</p>
-                    <p className="text-xs text-muted-foreground">{soles(a.precio)} · stock {a.stock}</p>
+                    <p className="text-xs text-muted-foreground">{lempiras(a.precio)} · stock {a.stock}</p>
                   </div>
                   <div className="flex items-center gap-2">
                     <Button size="icon" variant="outline" className="size-7" aria-label="Quitar"
@@ -275,7 +275,7 @@ export function NuevaVenta({ clienteInicial }: { clienteInicial: Cliente | null 
             <CardFooter>
               <Button className="w-full" size="lg" disabled={!cotizacion || registrando} onClick={registrar}>
                 {registrando && <Loader2 className="size-4 animate-spin" />}
-                Registrar venta {cotizacion && `· ${soles(cotizacion.total)}`}
+                Registrar venta {cotizacion && `· ${lempiras(cotizacion.total)}`}
               </Button>
             </CardFooter>
           </Card>

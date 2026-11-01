@@ -68,12 +68,12 @@ export default function Catalogo() {
         <FiltroSelect label="Material" value={filtros.material} opciones={opciones.data?.materiales ?? []} onChange={set("material")} />
         <FiltroSelect label="Forma" value={filtros.forma} opciones={opciones.data?.formas ?? []} onChange={set("forma")} />
         <div className="grid gap-1.5">
-          <Label htmlFor="precioMin">Precio mín. (S/)</Label>
+          <Label htmlFor="precioMin">Precio mín. (Lps)</Label>
           <Input id="precioMin" type="number" min={0} inputMode="decimal" value={precios.precioMin}
                  onChange={(e) => cambiarPrecio("precioMin", e.target.value)} />
         </div>
         <div className="grid gap-1.5">
-          <Label htmlFor="precioMax">Precio máx. (S/)</Label>
+          <Label htmlFor="precioMax">Precio máx. (Lps)</Label>
           <Input id="precioMax" type="number" min={0} inputMode="decimal" value={precios.precioMax}
                  onChange={(e) => cambiarPrecio("precioMax", e.target.value)} />
         </div>

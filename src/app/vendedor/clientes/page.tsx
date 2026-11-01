@@ -11,7 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { soles } from "@/lib/format";
+import { lempiras } from "@/lib/format";
 import type { Apartado, Cliente, Medicion } from "@/lib/types";
 import { useData } from "@/lib/use-data";
 
@@ -64,7 +64,7 @@ export default function Clientes() {
                 <CardContent className="flex flex-wrap items-center gap-2 text-sm">
                   <span className="text-muted-foreground">Aros apartados:</span>
                   {pendientes.map((a) => (
-                    <Badge key={a.id} variant="secondary">{a.aro.marca} {a.aro.modelo} · {soles(a.aro.precio)}</Badge>
+                    <Badge key={a.id} variant="secondary">{a.aro.marca} {a.aro.modelo} · {lempiras(a.aro.precio)}</Badge>
                   ))}
                 </CardContent>
               )}

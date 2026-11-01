@@ -30,10 +30,10 @@ export default function RegistroPage() {
           )}
           <Field label="Nombres" name="nombres" defaultValue={valor("nombres")} required maxLength={80} error={errores.nombres} />
           <Field label="Apellidos" name="apellidos" defaultValue={valor("apellidos")} required maxLength={80} error={errores.apellidos} />
-          <Field label="DNI" name="dni" defaultValue={valor("dni")} required inputMode="numeric" pattern="\d{8}" maxLength={8}
-                 title="8 dígitos" error={errores.dni} />
-          <Field label="Teléfono" name="telefono" defaultValue={valor("telefono")} required inputMode="tel" pattern="\d{9}" maxLength={9}
-                 title="9 dígitos" error={errores.telefono} />
+          <Field label="DNI" name="dni" defaultValue={valor("dni")} required inputMode="numeric" pattern="\d{13}" maxLength={13}
+                 title="13 dígitos, sin guiones" error={errores.dni} />
+          <Field label="Teléfono" name="telefono" defaultValue={valor("telefono")} required inputMode="tel" pattern="\d{8}" maxLength={8}
+                 title="8 dígitos" error={errores.telefono} />
           <div className="sm:col-span-2">
             <Field label="Correo" name="email" defaultValue={valor("email")} type="email" required autoComplete="email" error={errores.email} />
           </div>

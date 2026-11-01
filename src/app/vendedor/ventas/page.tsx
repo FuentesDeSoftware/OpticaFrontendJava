@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { fechaHora, soles } from "@/lib/format";
+import { fechaHora, lempiras } from "@/lib/format";
 import type { Venta } from "@/lib/types";
 import { useData } from "@/lib/use-data";
 
@@ -35,7 +35,7 @@ export default function Ventas() {
                 <TableHead>Cliente</TableHead>
                 <TableHead>Vendedor</TableHead>
                 <TableHead className="text-right">Subtotal</TableHead>
-                <TableHead className="text-right">IGV</TableHead>
+                <TableHead className="text-right">ISV</TableHead>
                 <TableHead className="text-right">Total</TableHead>
                 <TableHead className="w-12" />
               </TableRow>
@@ -47,9 +47,9 @@ export default function Ventas() {
                   <TableCell>{fechaHora(v.fecha)}</TableCell>
                   <TableCell className="font-medium">{v.clienteNombre}</TableCell>
                   <TableCell className="text-muted-foreground">{v.vendedorNombre}</TableCell>
-                  <TableCell className="text-right tabular-nums">{soles(v.subtotal)}</TableCell>
-                  <TableCell className="text-right tabular-nums">{soles(v.igv)}</TableCell>
-                  <TableCell className="text-right font-semibold tabular-nums">{soles(v.total)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{lempiras(v.subtotal)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{lempiras(v.igv)}</TableCell>
+                  <TableCell className="text-right font-semibold tabular-nums">{lempiras(v.total)}</TableCell>
                   <TableCell>
                     <Button size="icon" variant="ghost" aria-label="Ver detalle" onClick={() => setSeleccion(v.id)}>
                       <Eye className="size-4" />

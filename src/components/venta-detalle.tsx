@@ -1,9 +1,9 @@
 import { Separator } from "@/components/ui/separator";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { soles } from "@/lib/format";
+import { lempiras } from "@/lib/format";
 import type { Venta } from "@/lib/types";
 
-export function VentaDetalle({ venta, tasaIgv = 0.18 }: { venta: Pick<Venta, "detalles" | "subtotal" | "igv" | "total">; tasaIgv?: number }) {
+export function VentaDetalle({ venta, tasaIsv = 0.15 }: { venta: Pick<Venta, "detalles" | "subtotal" | "igv" | "total">; tasaIsv?: number }) {
   return (
     <div className="grid gap-3">
       <Table>
@@ -20,17 +20,17 @@ export function VentaDetalle({ venta, tasaIgv = 0.18 }: { venta: Pick<Venta, "de
             <TableRow key={d.id ?? i}>
               <TableCell className="whitespace-normal">{d.descripcion}</TableCell>
               <TableCell className="text-right tabular-nums">{d.cantidad}</TableCell>
-              <TableCell className="text-right tabular-nums">{soles(d.precioUnitario)}</TableCell>
-              <TableCell className="text-right tabular-nums">{soles(d.subtotal)}</TableCell>
+              <TableCell className="text-right tabular-nums">{lempiras(d.precioUnitario)}</TableCell>
+              <TableCell className="text-right tabular-nums">{lempiras(d.subtotal)}</TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
       <div className="grid gap-1 text-sm">
-        <Fila label="Subtotal" valor={soles(venta.subtotal)} />
-        <Fila label={`IGV (${Math.round(tasaIgv * 100)} %)`} valor={soles(venta.igv)} />
+        <Fila label="Subtotal" valor={lempiras(venta.subtotal)} />
+        <Fila label={`ISV (${Math.round(tasaIsv * 100)} %)`} valor={lempiras(venta.igv)} />
         <Separator className="my-1" />
-        <Fila label="Total" valor={soles(venta.total)} fuerte />
+        <Fila label="Total" valor={lempiras(venta.total)} fuerte />
       </div>
     </div>
   );

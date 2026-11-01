@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Glasses } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { soles } from "@/lib/format";
+import { lempiras } from "@/lib/format";
 import type { Aro } from "@/lib/types";
 
 export function AroCard({ aro, children }: { aro: Aro; children?: ReactNode }) {
@@ -27,7 +27,7 @@ export function AroCard({ aro, children }: { aro: Aro; children?: ReactNode }) {
         </div>
         <div className="mt-auto flex items-end justify-between gap-2">
           <div>
-            <p className="text-lg font-semibold">{soles(aro.precio)}</p>
+            <p className="text-lg font-semibold">{lempiras(aro.precio)}</p>
             <p className="text-xs text-muted-foreground">
               {aro.stock < 5 ? `¡Últimas ${aro.stock} unidades!` : `${aro.stock} disponibles`}
             </p>

@@ -6,7 +6,7 @@ const features = [
   { icon: ClipboardList, title: "Tus mediciones", text: "Consulta el historial de tus recetas oftalmológicas." },
   { icon: Glasses, title: "Catálogo de aros", text: "Filtra por marca, material, forma y precio, y aparta tu favorito." },
   { icon: Boxes, title: "Inventario", text: "Los vendedores gestionan aros, lunas y accesorios con alertas de stock." },
-  { icon: ShoppingBag, title: "Ventas", text: "Registro de ventas con cálculo de IGV y descuento automático de stock." },
+  { icon: ShoppingBag, title: "Ventas", text: "Registro de ventas con cálculo de ISV y descuento automático de stock." },
 ];
 
 export default function Home() {

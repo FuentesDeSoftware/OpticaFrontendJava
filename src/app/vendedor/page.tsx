@@ -9,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { fechaHora, soles } from "@/lib/format";
+import { fechaHora, lempiras } from "@/lib/format";
 import type { AlertasStock, Venta } from "@/lib/types";
 import { useData } from "@/lib/use-data";
 
@@ -53,7 +53,7 @@ export default function PanelVendedor() {
 
       <div className="mb-6 grid gap-4 sm:grid-cols-3">
         <Kpi icon={Receipt} label="Ventas de hoy" valor={ventas.cargando ? null : String(ventasHoy.length)} />
-        <Kpi icon={PackageCheck} label="Ingresos de hoy" valor={ventas.cargando ? null : soles(totalHoy)} />
+        <Kpi icon={PackageCheck} label="Ingresos de hoy" valor={ventas.cargando ? null : lempiras(totalHoy)} />
         <Kpi icon={Boxes} label="Productos con stock bajo" valor={alertas.cargando ? null : String(filasAlerta.length)} />
       </div>
 
@@ -110,7 +110,7 @@ export default function PanelVendedor() {
                       <p className="font-medium">{v.clienteNombre}</p>
                       <p className="text-xs text-muted-foreground">#{v.id} · {fechaHora(v.fecha)}</p>
                     </div>
-                    <span className="font-semibold">{soles(v.total)}</span>
+                    <span className="font-semibold">{lempiras(v.total)}</span>
                   </div>
                 ))}
                 <Button asChild variant="link" className="justify-self-start px-0">

@@ -13,7 +13,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { soles } from "@/lib/format";
+import { lempiras } from "@/lib/format";
 import { useData } from "@/lib/use-data";
 import { cn } from "@/lib/utils";
 
@@ -65,7 +65,7 @@ export function ProductoCrud<T extends ProductoBase>({
   const todosLosCampos: Campo[] = [
     { name: "codigo", label: "Código", required: true },
     ...campos,
-    { name: "precio", label: "Precio (S/)", type: "number", step: "0.01", required: true },
+    { name: "precio", label: "Precio (Lps)", type: "number", step: "0.01", required: true },
     { name: "stock", label: "Stock", type: "number", step: "1", required: true },
   ];
 
@@ -156,7 +156,7 @@ export function ProductoCrud<T extends ProductoBase>({
                 <TableRow key={p.id} className={cn(p.stock < 5 && "bg-destructive/5")}>
                   <TableCell className="font-mono text-xs">{p.codigo}</TableCell>
                   {columnas.map((c) => <TableCell key={c.header}>{c.cell(p)}</TableCell>)}
-                  <TableCell className="text-right tabular-nums">{soles(p.precio)}</TableCell>
+                  <TableCell className="text-right tabular-nums">{lempiras(p.precio)}</TableCell>
                   <TableCell className="text-right"><StockBadge stock={p.stock} /></TableCell>
                   <TableCell>
                     <div className="flex justify-end gap-1">

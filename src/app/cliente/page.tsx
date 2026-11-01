@@ -7,7 +7,7 @@ import { MedicionResumen, MedicionTabla } from "@/components/medicion-tabla";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { soles } from "@/lib/format";
+import { lempiras } from "@/lib/format";
 import type { Apartado, Cliente, Medicion } from "@/lib/types";
 import { useData } from "@/lib/use-data";
 
@@ -68,7 +68,7 @@ export default function ClienteInicio() {
               pendientes.slice(0, 3).map((a) => (
                 <div key={a.id} className="flex items-center justify-between rounded-lg border px-3 py-2 text-sm">
                   <span>{a.aro.marca} {a.aro.modelo}</span>
-                  <span className="font-medium">{soles(a.aro.precio)}</span>
+                  <span className="font-medium">{lempiras(a.aro.precio)}</span>
                 </div>
               ))
             ) : (
