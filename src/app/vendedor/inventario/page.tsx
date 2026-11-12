@@ -1,6 +1,7 @@
 "use client";
 
 import { PageHeader } from "@/components/app-shell";
+import { BotonPdf } from "@/components/boton-pdf";
 import { ProductoCrud } from "@/components/producto-crud";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import type { Accesorio, Aro, Luna } from "@/lib/types";
@@ -8,7 +9,9 @@ import type { Accesorio, Aro, Luna } from "@/lib/types";
 export default function Inventario() {
   return (
     <>
-      <PageHeader title="Inventario" description="Administra aros, lunas y accesorios. Las filas en rojo tienen stock bajo (< 5)." />
+      <PageHeader title="Inventario" description="Administra aros, lunas y accesorios. Las filas en rojo tienen stock bajo (< 5)."
+        actions={<BotonPdf ruta="/vendedor/reportes/inventario">Reporte de inventario</BotonPdf>}
+      />
       <Tabs defaultValue="aros">
         <TabsList className="mb-4">
           <TabsTrigger value="aros">Aros</TabsTrigger>

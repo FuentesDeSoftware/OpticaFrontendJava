@@ -9,6 +9,7 @@ import { PageHeader } from "@/components/app-shell";
 import { ClienteBuscador } from "@/components/cliente-buscador";
 import { MedicionResumen, MedicionTabla } from "@/components/medicion-tabla";
 import { StockBadge } from "@/components/stock-badge";
+import { BotonPdf } from "@/components/boton-pdf";
 import { VentaDetalle } from "@/components/venta-detalle";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -137,6 +138,7 @@ export function NuevaVenta({ clienteInicial }: { clienteInicial: Cliente | null 
         </CardHeader>
         <CardContent><VentaDetalle venta={ventaRegistrada} /></CardContent>
         <CardFooter className="justify-center gap-2">
+          <BotonPdf ruta={`/vendedor/reportes/ventas/${ventaRegistrada.id}`}>Imprimir comprobante</BotonPdf>
           <Button variant="outline" asChild><Link href="/vendedor/ventas">Ver ventas</Link></Button>
           <Button onClick={reiniciar}>Nueva venta</Button>
         </CardFooter>

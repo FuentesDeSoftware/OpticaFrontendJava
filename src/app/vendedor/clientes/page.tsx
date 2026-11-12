@@ -6,6 +6,7 @@ import { ClipboardList, Plus, ShoppingCart, Users } from "lucide-react";
 import { EmptyState, PageHeader } from "@/components/app-shell";
 import { ClienteBuscador } from "@/components/cliente-buscador";
 import { MedicionForm } from "@/components/medicion-form";
+import { BotonPdf } from "@/components/boton-pdf";
 import { MedicionResumen, MedicionTabla } from "@/components/medicion-tabla";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -82,7 +83,10 @@ export default function Clientes() {
                     <Card key={m.id}>
                       <CardHeader className="flex flex-row items-center justify-between gap-2">
                         <MedicionResumen m={m} />
-                        {i === 0 && <Badge>Vigente</Badge>}
+                        <div className="flex items-center gap-2">
+                          {i === 0 && <Badge>Vigente</Badge>}
+                          <BotonPdf ruta={`/vendedor/reportes/mediciones/${m.id}`} size="sm">Receta</BotonPdf>
+                        </div>
                       </CardHeader>
                       <CardContent><MedicionTabla m={m} /></CardContent>
                     </Card>

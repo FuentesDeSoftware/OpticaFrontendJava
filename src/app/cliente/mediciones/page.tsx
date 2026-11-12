@@ -2,6 +2,7 @@
 
 import { ClipboardList } from "lucide-react";
 import { EmptyState, PageHeader } from "@/components/app-shell";
+import { BotonPdf } from "@/components/boton-pdf";
 import { MedicionResumen, MedicionTabla } from "@/components/medicion-tabla";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
@@ -35,7 +36,10 @@ export default function MisMediciones() {
             <Card key={m.id}>
               <CardHeader className="flex flex-row items-center justify-between gap-2">
                 <MedicionResumen m={m} />
-                {i === 0 && <Badge>Vigente</Badge>}
+                <div className="flex items-center gap-2">
+                  {i === 0 && <Badge>Vigente</Badge>}
+                  <BotonPdf ruta={`/cliente/reportes/mediciones/${m.id}`} size="sm">Descargar receta</BotonPdf>
+                </div>
               </CardHeader>
               <CardContent>
                 <MedicionTabla m={m} />
